@@ -1,5 +1,7 @@
 # N1MMMapper
 
+The main source code for the map and handling of the Maidenhead locator is in src/app/app.component.ts
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.4.
 
 ## Development server
