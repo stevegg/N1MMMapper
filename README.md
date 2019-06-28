@@ -4,6 +4,8 @@ The main source code for the map and handling of the Maidenhead locator is in sr
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.4.
 
+Make sure to do `npm install` before you attempt to run this.....things won't go well otherwise....
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
