@@ -32,6 +32,7 @@ export class AppComponent {
   stationLocator : string;
   shackFeature: any;
   shackPosition: any;
+
   ngOnInit() {
 
     this.stationLocator = "CN89ac";
@@ -111,6 +112,11 @@ export class AppComponent {
     });
   }
 
+  /**
+   * Add a locator to the map
+   * @param locator     The locator to add
+   * @param callsign    The callsign of the person whose locator we're adding
+   */
   addMapLocator(locator, callsign) {
     var position = this.mapLocator(locator);
     var iconFeature = new ol.Feature({
@@ -139,6 +145,11 @@ export class AppComponent {
     this.map.getView().fit(ext, this.map.getSize());
   }
 
+  /**
+   * Calculate a Lat/Lng from a Maidenhead grid locator
+   * @param locator The locator to get Lat/Lng from
+   * @returns The lat/lng as an array where position 0 is the latitude and 1 is the longitude
+   */
   mapLocator(locator) {
     console.log("Locator :", locator);
     if ( Maidenhead.valid(locator) ) {
@@ -157,66 +168,13 @@ export class AppComponent {
     }
   }
 
-
+  /**
+   * Sets the center of the map and adjust the zoom level
+   */
   setCenter() {
     var view = this.map.getView();
     view.setCenter(ol.proj.fromLonLat([this.longitude, this.latitude]));
     view.setZoom(15);
-  }
-
-  getLatLngFromLocator(locator) {
-    locator = locator.trim().toUpperCase();
-    // if ( locator.length < 6 ) {
-    //   locator += "LL55LL55".substr(0, 6-locator.length);
-    // } 
-    console.log("Massaged locator: ", locator);
-
-    if (locator.match("^[A-R]{2}[0-9]{2}$") !== null) {
-      console.log("1");
-      return this.calculateUpperRight({ lowerLeft:{  
-        lng:(locator.charCodeAt(0) - 'A'.charCodeAt(0)) * 20 + (locator.charCodeAt(2) - '0'.charCodeAt(0) + 0.5) * 2 - 180,
-        lat:(locator.charCodeAt(1) - 'A'.charCodeAt(0)) * 10 + (locator.charCodeAt(3) - '0'.charCodeAt(0) + 0.5) - 90
-      }, upperRight:{}}, 2);
-    } else if (locator.match("^[A-R]{2}[0-9]{2}[A-X]{2}$") !== null) {
-      console.log("2");
-      return this.calculateUpperRight({lowerLeft:{
-			  lng:(locator.charCodeAt(0) - 'A'.charCodeAt(0)) * 20 + (locator.charCodeAt(2) - '0'.charCodeAt(0)) * 2 + (locator.charCodeAt(4) - 'A'.charCodeAt(0) + 0.5) / 12 - 180,
-				lat:(locator.charCodeAt(1) - 'A'.charCodeAt(0)) * 10 + (locator.charCodeAt(3) - '0'.charCodeAt(0)) + (locator.charCodeAt(5) - 'A'.charCodeAt(0) + 0.5) / 24 - 90
-			}, upperRight:{}}, 4);
-    } else if (locator.match("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$") !== null) {
-      console.log("3");
-      return this.calculateUpperRight({lowerLeft:{
-				lng:(locator.charCodeAt(0) - 'A'.charCodeAt(0)) * 20 + (locator.charCodeAt(2) - '0'.charCodeAt(0)) * 2 + (locator.charCodeAt(4) - 'A'.charCodeAt(0) + 0.0) / 12 + (locator.charCodeAt(6) - '0'.charCodeAt(0) + 0.5) / 120 - 180,
-				lat:(locator.charCodeAt(1) - 'A'.charCodeAt(0)) * 10 + (locator.charCodeAt(3) - '0'.charCodeAt(0)) + (locator.charCodeAt(5) - 'A'.charCodeAt(0) + 0.0) / 24 + (locator.charCodeAt(7) - '0'.charCodeAt(0) + 0.5) / 240 - 90
-      }, upperRight:{}}, 6);
-		} else if (locator.match("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$") !== null) {
-      console.log("4");
-			return this.calculateUpperRight({lowerLeft:{
-				  lng:(locator.charCodeAt(0) - 'A'.charCodeAt(0)) * 20 + (locator.charCodeAt(2) - '0'.charCodeAt(0)) * 2 + (locator.charCodeAt[4] - 'A'.charCodeAt(0) + 0.0) / 12 + (locator.charCodeAt(6) - '0'.charCodeAt(0) + 0.0) / 120 + (locator.charCodeAt(8) - 'A'.charCodeAt(0) + 0.5) / 120 / 24 - 180,
-				  lat:(locator.charCodeAt(1) - 'A'.charCodeAt(0)) * 10 + (locator.charCodeAt(3) - '0'.charCodeAt(0)) + (locator.charCodeAt[5] - 'A'.charCodeAt(0) + 0.0) / 24 + (locator.charCodeAt(7) - '0'.charCodeAt(0) + 0.0) / 240 + (locator.charCodeAt(9) - 'A'.charCodeAt(0) + 0.5) / 240 / 24 - 90
-      }, upperRight:{}}, 8);
-		} else {
-      console.log("No Match");
-      return null;
-		}
-  }
-
-  calculateUpperRight( result, precision) {
-    console.log("Precision :", precision);
-    if ( precision === 2 ) {
-      result.upperRight.lat = result.lowerLeft.lat + 1;
-      result.upperRight.lng = result.lowerLeft.lng + 2;
-    } else if ( precision == 4 ) {
-      result.upperRight.lat = result.lowerLeft.lat + 0.04166667;
-      result.upperRight.lng = result.lowerLeft.lng + 0.08333333;
-    } else if ( precision == 3 ) {
-      result.upperRight.lat = result.lowerLeft.lat + 1;
-      result.upperRight.lng = result.lowerLeft.lng + 1;
-    } else {
-      result.upperRight.lat = result.lowerLeft.lat + 1;
-      result.upperRight.lng = result.lowerLeft.lng + 1;
-    }
-    return result;
   }
 
 }
