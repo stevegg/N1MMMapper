@@ -60,7 +60,7 @@ export class AppComponent {
 
     var arcStyle = new ol.style.Style({
       stroke: new ol.style.Stroke({
-        color: '#EAE911',
+        color: '#00FF00',
         width: 2
       })
     });
@@ -91,11 +91,12 @@ export class AppComponent {
       })
     });
 
-    this.shackPosition = this.mapLocator("CN89ac");
+    this.shackPosition = this.mapLocator("CN89ae39la57");
     this.shackFeature = new ol.Feature({
       geometry: new ol.geom.Point(ol.proj.fromLonLat([this.shackPosition[1], this.shackPosition[0]])),
       name: "VE7NA"
     });
+    this.markerSource.addFeature(this.shackFeature);
 
     this.map.on('click', function (args) {
       console.log(args.coordinate);
@@ -116,18 +117,26 @@ export class AppComponent {
       geometry: new ol.geom.Point(ol.proj.fromLonLat([position[1], position[0]])),
       name: callsign
     });
-    this.markerSource.clear();
-    this.markerSource.addFeature(this.shackFeature);
+    //this.markerSource.clear();
+    //this.markerSource.addFeature(this.shackFeature);
     this.markerSource.addFeature(iconFeature);
 
-    var generator = new arc.GreatCircle({x: this.shackPosition[1], y: this.shackPosition[0]}, {x: position[1], y: position[0]}, {'name': 'VE7NA - ' + callsign});
-    var line = generator.Arc(100,{offset:10});
-    //line.transform('EPSG:4326', 'EPSG:3857');
+    var generator = new arc.GreatCircle(
+      {x: this.shackPosition[1], y: this.shackPosition[0]}, 
+      {x: position[1], y: position[0]}, 
+      {'name': 'VE7NA - ' + callsign});
+    var arcLine = generator.Arc(100,{offset:50});
+    var line = new ol.geom.LineString(arcLine.geometries[0].coords);
+    console.log(line);
+    line.transform('EPSG:4326', 'EPSG:3857');
     var feature = new ol.Feature({
       geometry: line,
       finished: false
     });
     this.arcSource.addFeature(feature);
+
+    var ext=feature.getGeometry().getExtent();
+    this.map.getView().fit(ext, this.map.getSize());
   }
 
   mapLocator(locator) {
